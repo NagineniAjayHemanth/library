@@ -19,7 +19,10 @@ const books = [
     { name: "Deep Learning", sizeMB: 20, path: "/books/deeplearning.pdf", category: "AI" },
     { name: "System Architecture", sizeMB: 9, path: "/books/architecture.pdf", category: "Other" },
     { name: "DevOps Practices", sizeMB: 12, path: "/books/devops.pdf", category: "Other" },
-    { name: "API Development", sizeMB: 8, path: "/books/api.pdf", category: "Programming" }
+    { name: "API Development", sizeMB: 8, path: "/books/api.pdf", category: "Programming" },
+    { name: "React Development", sizeMB: 14, path: "/books/react.pdf", category: "Programming" },
+    { name: "Docker Guide", sizeMB: 7, path: "/books/docker.pdf", category: "Other" },
+    { name: "Kubernetes Basics", sizeMB: 16, path: "/books/kubernetes.pdf", category: "Networking" }
 ];
 
 // Configuration
@@ -28,6 +31,7 @@ const SCALE_PX_PER_MB = 6;
 
 // DOM elements
 const shelvesContainer = document.getElementById('shelvesContainer');
+const emptyState = document.getElementById('emptyState');
 const searchInput = document.getElementById('searchInput');
 const sortSelect = document.getElementById('sortSelect');
 
@@ -67,6 +71,15 @@ function handleSort() {
             break;
     }
 
+    // Apply search filter if there's a search term
+    const searchTerm = searchInput.value.toLowerCase();
+    if (searchTerm) {
+        sortedBooks = sortedBooks.filter(book =>
+            book.name.toLowerCase().includes(searchTerm) ||
+            book.category.toLowerCase().includes(searchTerm)
+        );
+    }
+
     renderBookshelf(sortedBooks);
 }
 
@@ -74,6 +87,15 @@ function handleSort() {
 function renderBookshelf(bookList) {
     // Clear existing shelves
     shelvesContainer.innerHTML = '';
+
+    // Show empty state if no books
+    if (bookList.length === 0) {
+        emptyState.classList.remove('hidden');
+        return;
+    }
+
+    // Hide empty state
+    emptyState.classList.add('hidden');
 
     // Organize books into shelves using the packing algorithm
     const shelves = organizeBooksIntoShelves(bookList);
@@ -127,7 +149,7 @@ function createShelfElement(books, shelfNumber) {
 
     const shelfTitle = document.createElement('div');
     shelfTitle.className = 'shelf-title';
-    shelfTitle.textContent = `Shelf ${shelfNumber}`;
+    shelfTitle.textContent = `📚 Shelf ${shelfNumber}`;
 
     const shelfUsage = document.createElement('div');
     shelfUsage.className = 'shelf-usage';
@@ -154,12 +176,17 @@ function createShelfElement(books, shelfNumber) {
     progressBar.className = 'progress-bar';
     progressBar.style.width = `${usagePercentage}%`;
 
+    const progressText = document.createElement('div');
+    progressText.className = 'progress-text';
+    progressText.textContent = `${Math.round(usagePercentage)}% Full`;
+
     progressContainer.appendChild(progressBar);
 
     // Assemble shelf
     shelfElement.appendChild(shelfHeader);
     shelfElement.appendChild(booksContainer);
     shelfElement.appendChild(progressContainer);
+    shelfElement.appendChild(progressText);
 
     return shelfElement;
 }
@@ -187,17 +214,80 @@ function createBookElement(book) {
     bookTitle.className = 'book-title';
     bookTitle.textContent = book.name;
 
+    // Book size (shown on hover)
+    const bookSize = document.createElement('div');
+    bookSize.className = 'book-size';
+    bookSize.textContent = `${book.sizeMB} MB`;
+
     // Add click event to open book
     bookElement.addEventListener('click', () => {
-        alert(`Opening book: ${book.name}\nCategory: ${book.category}\nSize: ${book.sizeMB} MB\nPath: ${book.path}`);
-        // In a real implementation, you would open the book here
-        // window.open(book.path, '_blank');
+        // Create a modal with book details
+        showBookDetails(book);
     });
 
     bookElement.appendChild(bookSpine);
     bookElement.appendChild(bookTitle);
+    bookElement.appendChild(bookSize);
 
     return bookElement;
+}
+
+// Show book details in a modal
+function showBookDetails(book) {
+    // Remove existing modal if any
+    const existingModal = document.querySelector('.book-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    // Create modal
+    const modal = document.createElement('div');
+    modal.className = 'book-modal';
+
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content';
+
+    const closeBtn = document.createElement('span');
+    closeBtn.className = 'close-btn';
+    closeBtn.innerHTML = '&times;';
+    closeBtn.addEventListener('click', () => modal.remove());
+
+    const title = document.createElement('h2');
+    title.textContent = book.name;
+
+    const category = document.createElement('p');
+    category.innerHTML = `<strong>Category:</strong> ${book.category}`;
+
+    const size = document.createElement('p');
+    size.innerHTML = `<strong>Size:</strong> ${book.sizeMB} MB`;
+
+    const path = document.createElement('p');
+    path.innerHTML = `<strong>Path:</strong> ${book.path}`;
+
+    const openBtn = document.createElement('button');
+    openBtn.textContent = 'Open Book';
+    openBtn.className = 'open-btn';
+    openBtn.addEventListener('click', () => {
+        alert(`Opening: ${book.name}\nThis would open the file at: ${book.path}`);
+        // In a real implementation: window.open(book.path, '_blank');
+    });
+
+    modalContent.appendChild(closeBtn);
+    modalContent.appendChild(title);
+    modalContent.appendChild(category);
+    modalContent.appendChild(size);
+    modalContent.appendChild(path);
+    modalContent.appendChild(openBtn);
+
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+
+    // Close modal when clicking outside
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
 }
 
 // Initialize when page loads

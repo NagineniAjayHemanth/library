@@ -7,20 +7,29 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="library-header">
-        <h1>My Digital Library</h1>
-        <div class="controls">
-            <input type="text" id="searchInput" placeholder="Search books...">
-            <select id="sortSelect">
-                <option value="name">Sort by Name</option>
-                <option value="size">Sort by Size</option>
-                <option value="category">Sort by Category</option>
-            </select>
-        </div>
-    </div>
+    <div class="library-container">
+        <header class="library-header">
+            <h1>📚 My Digital Library</h1>
+            <div class="controls">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search books...">
+                    <span class="search-icon">🔍</span>
+                </div>
+                <select id="sortSelect">
+                    <option value="name">Sort by Name</option>
+                    <option value="size">Sort by Size</option>
+                    <option value="category">Sort by Category</option>
+                </select>
+            </div>
+        </header>
 
-    <div class="bookshelf-container">
-        <div id="shelvesContainer" class="shelves-container"></div>
+        <main class="main-content">
+            <div id="shelvesContainer" class="shelves-container"></div>
+            <div id="emptyState" class="empty-state hidden">
+                <h2>No books found</h2>
+                <p>Try adjusting your search criteria</p>
+            </div>
+        </main>
     </div>
 
     <script src="script.js"></script>
