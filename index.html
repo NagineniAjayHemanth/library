@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Library Bookshelf</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="library-header">
+        <h1>My Digital Library</h1>
+        <div class="controls">
+            <input type="text" id="searchInput" placeholder="Search books...">
+            <select id="sortSelect">
+                <option value="name">Sort by Name</option>
+                <option value="size">Sort by Size</option>
+                <option value="category">Sort by Category</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="bookshelf-container">
+        <div id="shelvesContainer" class="shelves-container"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
